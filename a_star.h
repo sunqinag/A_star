@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <Eigen/Core>
+#include <fstream>
 
 struct Node {
     int x;
@@ -26,7 +27,7 @@ public:
     A_Star(const std::vector<std::vector<int>>& map);
     bool solve();//解决方案
     void print_path();//追溯路径，打印在控制台上
-    void print_map(std::vector<std::vector<int>> &map);//直接打印寻找的地图
+    void print_map(std::string path_file);//直接打印寻找的地图
 
     Node* m_map = nullptr;//地图用一维数组数组存储
     int m_map_height;//高和宽
