@@ -27,11 +27,8 @@ A_Star::A_Star(const std::vector<std::vector<int>> &map)
             curr_node.F = std::numeric_limits<int>::max();
             switch (map[i][j])
             {
-            case 254:
+            case 255:
                 curr_node.visiable = true;
-                break;
-            case 205:
-                curr_node.visiable = false;
                 break;
             case 0:
                 curr_node.visiable = false;
@@ -75,12 +72,12 @@ bool A_Star::solve()
     std::vector<Node *> openlist;
     std::vector<Node *> closelist;
 
-    openlist.push_back(m_start); // 开始节点加入openlist
-    m_start->G = 0;              // 开始节点的G置零并计算F
+    openlist.push_back(m_start);
+    m_start->G = 0;              
     m_start->F = m_start->H;
 
     while (openlist.size() != 0)
-    { // 如果openlist不为空
+    { 
 
         Node *curr_node = nullptr; // 找到F值最小的节点作为当前处理节点
         for (std::vector<Node *>::iterator node = openlist.begin(); node != openlist.end(); node++)
@@ -97,7 +94,7 @@ bool A_Star::solve()
         }
 
         if (curr_node == m_end)
-        { // 如果这个节点刚好是终点，直接返回true退出
+        {
             return true;
         }
 
@@ -247,11 +244,11 @@ bool A_Star::solve()
         closelist.push_back(curr_node); // 放到closelist中
     }
 
-    return false; // 没找到路径，直接返回
+    return false; 
 }
 
 void A_Star::print_path()
-{ // 从终点往回追溯路径并打印
+{ 
     Node *curr_node = m_end;
     while (curr_node != nullptr)
     {
@@ -263,7 +260,7 @@ void A_Star::print_path()
 void A_Star::print_map(std::string path_file)
 {
     std::ofstream path(path_file, std::ios::app);
-    Node *curr_node = m_end->prev; // 将除了起点和终点的路径标为'*'
+    Node *curr_node = m_end->prev;
     std::vector<Eigen::Vector2d> points;
     while (curr_node->prev != nullptr)
     {

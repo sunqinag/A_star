@@ -3,6 +3,10 @@
 
 #include "a_star.h"
 #include <Eigen/Dense>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
 /**
  *
 #   0: obstacle
@@ -90,10 +94,33 @@ std::vector<std::vector<int>> reset_node(std::vector<std::vector<int>> &map2d, E
     return map2d;
 }
 
+cv::Mat expanse_map(cv::Mat &map)
+{
+    cv::Mat expanse_map = map.clone();
+    for (size_t i = 0; i < map.rows; i++)
+    {
+        for (size_t j = 0; j < map.cols; j++)
+        {
+            if (map.at<uchar>(i, j) == 0)
+            {
+                int expanse_pixel = 5; //膨胀10个像素，效果极为显著
+                cv::circle(expanse_map,cv::Point(j,i),expanse_pixel,cv::Scalar(0)); 
+            }
+        }
+    }
+
+    // // 显示结果
+    cv::imwrite("../debug/Original Image.png", map);
+    cv::imwrite("../debug/Sharpened Image.png", expanse_map);
+    // exit(0);
+    return expanse_map;
+}
+
 int main()
 {
-    Eigen::MatrixXd nodes(26, 2);
-    nodes << 456, 226,
+    Eigen::MatrixXd nodes(24, 2);
+    nodes << 
+        // 456, 226,
         1124, 1353,
         1182, 1636,
         1152, 2193,
@@ -117,13 +144,25 @@ int main()
         1322, 1676,
         1270, 1440,
         1114, 1640,
-        1416, 1650,
-        446, 146;
+        1416, 1650;
+        // 456, 226;
+        
+
+    std::string path_file = "../debug/path.txt";
+    fs::path pf(path_file);
+    if (fs::exists(pf))
+    {
+        fs::remove(pf);
+        std::cout << "删除： " << pf.c_str() << std::endl;
+    }
 
     std::cout << nodes << std::endl;
     std::string file = "/home/sunqiang/data/zz520/jueying.pgm";
     cv::Mat map = cv::imread(file, cv::IMREAD_GRAYSCALE); // 读取为灰度图像
+    cv::threshold(map, map, 240, 255, cv::THRESH_BINARY);
     std::cout << "cols: " << map.cols << " rows: " << map.rows << std::endl;
+
+    map = expanse_map(map);
 
     std::vector<std::vector<int>> map2d = Mat2Vector(map);
 
@@ -132,13 +171,13 @@ int main()
     {
         Eigen::Vector2d end_node = nodes.row(i);
         map2d = set_new_node(map2d, start_node, end_node);
-        // std::shared_ptr<A_Star> problem = std::make_shared<A_Star>(map2d);
-        A_Star* problem = new A_Star(map2d);
+        std::unique_ptr<A_Star> problem(new A_Star(map2d));
 
         if (problem->solve())
         {
-            problem->print_map("../debug/path.txt");
-            std::cout << "part i: " << i<<" "<<end_node.transpose() << " finish \n";
+
+            problem->print_map(path_file);
+            std::cout << "part i: " << i << " " << end_node.transpose() << " finish \n";
         }
         else
         {
@@ -148,8 +187,6 @@ int main()
 
         map2d = reset_node(map2d, start_node, end_node);
         start_node = end_node;
-
-        delete problem;
     }
 
     return 1;
