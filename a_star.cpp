@@ -13,37 +13,38 @@ A_Star::A_Star(const std::vector<std::vector<int>> &map)
         throw std::logic_error("map format error");
     }
 
-    m_map = new Node[m_map_height * m_map_weight];
+    m_map.resize(m_map_height * m_map_weight);
     for (int i = 0; i < m_map_height; ++i)
     {
         for (int j = 0; j < m_map_weight; ++j)
         {
-            Node &curr_node = m_map[i * m_map_weight + j];
+            std::shared_ptr<Node> curr_node = std::make_shared<Node>();
 
-            curr_node.x = j;
-            curr_node.y = i;
+            curr_node->x = j;
+            curr_node->y = i;
 
-            curr_node.G = std::numeric_limits<int>::max(); // 先全部设置为无限大
-            curr_node.F = std::numeric_limits<int>::max();
+            curr_node->G = std::numeric_limits<int>::max(); // 先全部设置为无限大
+            curr_node->F = std::numeric_limits<int>::max();
             switch (map[i][j])
             {
             case 255:
-                curr_node.visiable = true;
+                curr_node->visiable = true;
                 break;
             case 0:
-                curr_node.visiable = false;
+                curr_node->visiable = false;
                 break;
             case 1:
-                curr_node.visiable = true;
-                m_start = &curr_node;
+                curr_node->visiable = true;
+                m_start = curr_node;
                 break;
             case 2:
-                curr_node.visiable = true;
-                m_end = &curr_node;
+                curr_node->visiable = true;
+                m_end = curr_node;
                 break;
             default:
                 throw std::logic_error("illegal identifier exist");
             }
+            m_map.at(i * m_map_weight + j) = curr_node;
         }
     }
 
@@ -60,8 +61,8 @@ A_Star::A_Star(const std::vector<std::vector<int>> &map)
     {
         for (int j = 0; j < m_map_weight; ++j)
         {
-            Node &curr_node = m_map[i * m_map_weight + j];
-            curr_node.H = (std::abs(curr_node.x - m_end->x) + std::abs(curr_node.y - m_end->y)) * 10; // 计算曼哈顿距离
+            std::shared_ptr<Node> curr_node = m_map.at(i * m_map_weight + j);
+            curr_node->H = (std::abs(curr_node->x - m_end->x) + std::abs(curr_node->y - m_end->y)) * 10; // 计算曼哈顿距离
         }
     }
 }
@@ -69,18 +70,18 @@ A_Star::A_Star(const std::vector<std::vector<int>> &map)
 bool A_Star::solve()
 {
 
-    std::vector<Node *> openlist;
-    std::vector<Node *> closelist;
+    std::vector<std::shared_ptr<Node>> openlist;
+    std::vector<std::shared_ptr<Node>> closelist;
 
     openlist.push_back(m_start);
-    m_start->G = 0;              
+    m_start->G = 0;
     m_start->F = m_start->H;
 
     while (openlist.size() != 0)
-    { 
+    {
 
-        Node *curr_node = nullptr; // 找到F值最小的节点作为当前处理节点
-        for (std::vector<Node *>::iterator node = openlist.begin(); node != openlist.end(); node++)
+        std::shared_ptr<Node> curr_node = nullptr; // 找到F值最小的节点作为当前处理节点
+        for (std::vector<std::shared_ptr<Node>>::iterator node = openlist.begin(); node != openlist.end(); node++)
         {
             if (curr_node == nullptr)
             {
@@ -105,7 +106,7 @@ bool A_Star::solve()
 
         if (has_prev_x)
         { // 存在左侧
-            Node *left = &m_map[curr_node->y * m_map_weight + curr_node->x - 1];
+            std::shared_ptr<Node> left = m_map[curr_node->y * m_map_weight + curr_node->x - 1];
             if (left->visiable && std::find(closelist.begin(), closelist.end(), left) == closelist.end())
             { // 如果此路径可用并且不在closelist中
                 if (curr_node->G + 10 < left->G)
@@ -121,7 +122,7 @@ bool A_Star::solve()
             }
             if (has_prev_y && allow_diagnoally)
             { // 存在左上
-                Node *left_up = &m_map[(curr_node->y - 1) * m_map_weight + curr_node->x - 1];
+                std::shared_ptr<Node> left_up = m_map[(curr_node->y - 1) * m_map_weight + curr_node->x - 1];
                 if (left_up->visiable && std::find(closelist.begin(), closelist.end(), left_up) == closelist.end())
                 {
                     if (curr_node->G + 14 < left_up->G)
@@ -138,7 +139,7 @@ bool A_Star::solve()
             }
             if (has_next_y && allow_diagnoally)
             { // 存在左下
-                Node *left_down = &m_map[(curr_node->y + 1) * m_map_weight + curr_node->x - 1];
+                std::shared_ptr<Node> left_down = m_map[(curr_node->y + 1) * m_map_weight + curr_node->x - 1];
                 if (left_down->visiable && std::find(closelist.begin(), closelist.end(), left_down) == closelist.end())
                 {
                     if (curr_node->G + 14 < left_down->G)
@@ -156,7 +157,7 @@ bool A_Star::solve()
         }
         if (has_next_x)
         { // 存在右侧
-            Node *right = &m_map[curr_node->y * m_map_weight + curr_node->x + 1];
+            std::shared_ptr<Node> right = m_map[curr_node->y * m_map_weight + curr_node->x + 1];
             if (right->visiable && std::find(closelist.begin(), closelist.end(), right) == closelist.end())
             {
                 if (curr_node->G + 10 < right->G)
@@ -172,7 +173,7 @@ bool A_Star::solve()
             }
             if (has_prev_y && allow_diagnoally)
             { // 存在右上
-                Node *right_up = &m_map[(curr_node->y - 1) * m_map_weight + curr_node->x + 1];
+                std::shared_ptr<Node> right_up = m_map[(curr_node->y - 1) * m_map_weight + curr_node->x + 1];
                 if (right_up->visiable && std::find(closelist.begin(), closelist.end(), right_up) == closelist.end())
                 {
                     if (curr_node->G + 14 < right_up->G)
@@ -189,7 +190,7 @@ bool A_Star::solve()
             }
             if (has_next_y && allow_diagnoally)
             { // 存在右下
-                Node *right_down = &m_map[(curr_node->y + 1) * m_map_weight + curr_node->x + 1];
+                std::shared_ptr<Node> right_down = m_map[(curr_node->y + 1) * m_map_weight + curr_node->x + 1];
                 if (right_down->visiable && std::find(closelist.begin(), closelist.end(), right_down) == closelist.end())
                 {
                     if (curr_node->G + 14 < right_down->G)
@@ -207,7 +208,7 @@ bool A_Star::solve()
         }
         if (has_prev_y)
         { // 存在上侧
-            Node *up = &m_map[(curr_node->y - 1) * m_map_weight + curr_node->x];
+            std::shared_ptr<Node> up = m_map[(curr_node->y - 1) * m_map_weight + curr_node->x];
             if (up->visiable && std::find(closelist.begin(), closelist.end(), up) == closelist.end())
             {
                 if (curr_node->G + 10 < up->G)
@@ -224,7 +225,7 @@ bool A_Star::solve()
         }
         if (has_next_y)
         { // 存在下侧
-            Node *down = &m_map[(curr_node->y + 1) * m_map_weight + curr_node->x];
+            std::shared_ptr<Node> down = m_map[(curr_node->y + 1) * m_map_weight + curr_node->x];
             if (down->visiable && std::find(closelist.begin(), closelist.end(), down) == closelist.end())
             {
                 if (curr_node->G + 10 < down->G)
@@ -244,12 +245,12 @@ bool A_Star::solve()
         closelist.push_back(curr_node); // 放到closelist中
     }
 
-    return false; 
+    return false;
 }
 
 void A_Star::print_path()
-{ 
-    Node *curr_node = m_end;
+{
+    std::shared_ptr<Node> curr_node = m_end;
     while (curr_node != nullptr)
     {
         std::cout << "(" << curr_node->x << ", " << curr_node->y << ")" << std::endl;
@@ -260,7 +261,7 @@ void A_Star::print_path()
 void A_Star::print_map(std::string path_file)
 {
     std::ofstream path(path_file, std::ios::app);
-    Node *curr_node = m_end->prev;
+    std::shared_ptr<Node> curr_node = m_end->prev;
     std::vector<Eigen::Vector2d> points;
     while (curr_node->prev != nullptr)
     {

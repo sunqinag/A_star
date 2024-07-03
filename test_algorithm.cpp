@@ -103,8 +103,8 @@ cv::Mat expanse_map(cv::Mat &map)
         {
             if (map.at<uchar>(i, j) == 0)
             {
-                int expanse_pixel = 5; //膨胀10个像素，效果极为显著
-                cv::circle(expanse_map,cv::Point(j,i),expanse_pixel,cv::Scalar(0)); 
+                int expanse_pixel = 5; // 膨胀10个像素，效果极为显著
+                cv::circle(expanse_map, cv::Point(j, i), expanse_pixel, cv::Scalar(0));
             }
         }
     }
@@ -119,9 +119,10 @@ cv::Mat expanse_map(cv::Mat &map)
 int main()
 {
     Eigen::MatrixXd nodes(25, 2);
-    nodes << 
+    nodes <<
         // 456, 226,
-        1124, 1353,
+        1124,
+        1353,
         1182, 1636,
         1152, 2193,
         1118, 2543,
@@ -146,7 +147,6 @@ int main()
         1114, 1640,
         1416, 1650,
         1124, 1353;
-        
 
     std::string path_file = "../debug/path.txt";
     fs::path pf(path_file);
@@ -177,7 +177,7 @@ int main()
         {
 
             problem->print_map(path_file);
-            std::cout<<"start point: "<<start_node.transpose()<<" end point: "<<end_node.transpose()<<std::endl;
+            std::cout << "start point: " << start_node.transpose() << " end point: " << end_node.transpose() << std::endl;
         }
         else
         {
