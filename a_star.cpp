@@ -119,7 +119,7 @@ bool A_Star::solve()
                     }
                 }
             }
-            if (has_prev_y)
+            if (has_prev_y && allow_diagnoally)
             { // 存在左上
                 Node *left_up = &m_map[(curr_node->y - 1) * m_map_weight + curr_node->x - 1];
                 if (left_up->visiable && std::find(closelist.begin(), closelist.end(), left_up) == closelist.end())
@@ -136,7 +136,7 @@ bool A_Star::solve()
                     }
                 }
             }
-            if (has_next_y)
+            if (has_next_y && allow_diagnoally)
             { // 存在左下
                 Node *left_down = &m_map[(curr_node->y + 1) * m_map_weight + curr_node->x - 1];
                 if (left_down->visiable && std::find(closelist.begin(), closelist.end(), left_down) == closelist.end())
@@ -170,7 +170,7 @@ bool A_Star::solve()
                     }
                 }
             }
-            if (has_prev_y)
+            if (has_prev_y && allow_diagnoally)
             { // 存在右上
                 Node *right_up = &m_map[(curr_node->y - 1) * m_map_weight + curr_node->x + 1];
                 if (right_up->visiable && std::find(closelist.begin(), closelist.end(), right_up) == closelist.end())
@@ -187,7 +187,7 @@ bool A_Star::solve()
                     }
                 }
             }
-            if (has_next_y)
+            if (has_next_y && allow_diagnoally)
             { // 存在右下
                 Node *right_down = &m_map[(curr_node->y + 1) * m_map_weight + curr_node->x + 1];
                 if (right_down->visiable && std::find(closelist.begin(), closelist.end(), right_down) == closelist.end())

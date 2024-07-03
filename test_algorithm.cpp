@@ -118,7 +118,7 @@ cv::Mat expanse_map(cv::Mat &map)
 
 int main()
 {
-    Eigen::MatrixXd nodes(24, 2);
+    Eigen::MatrixXd nodes(25, 2);
     nodes << 
         // 456, 226,
         1124, 1353,
@@ -144,8 +144,8 @@ int main()
         1322, 1676,
         1270, 1440,
         1114, 1640,
-        1416, 1650;
-        // 456, 226;
+        1416, 1650,
+        1124, 1353;
         
 
     std::string path_file = "../debug/path.txt";
@@ -177,7 +177,7 @@ int main()
         {
 
             problem->print_map(path_file);
-            std::cout << "part i: " << i << " " << end_node.transpose() << " finish \n";
+            std::cout<<"start point: "<<start_node.transpose()<<" end point: "<<end_node.transpose()<<std::endl;
         }
         else
         {

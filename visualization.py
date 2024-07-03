@@ -31,4 +31,4 @@ if __name__ == "__main__":
         cv2.circle(image, point.astype(np.int32), 2, (0, 0, 255))
         cv2.imwrite(image_save_dir + str(i) + ".png", image)
     cv2.imwrite("./debug/result.png", image)
-    
+    os.system("sh {}".format('./pack_image2video.sh'))

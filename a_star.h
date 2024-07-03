@@ -39,6 +39,7 @@ public:
     int m_map_weight;
     Node *m_start = nullptr; // 开始和结束格子
     Node *m_end = nullptr;
+    bool allow_diagnoally = false; // 允许斜向寻迹
 };
 
 #endif // A_STAR_H
